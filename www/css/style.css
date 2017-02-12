@@ -1,0 +1,39 @@
+.top-bar {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 2;
+    box-shadow: none;
+}
+
+.top-bar #settings li a {
+    color: #212121;
+}
+
+.top-bar .title {
+    font-size: 1.5em;
+    margin-left: 20px;
+    margin-right: auto;
+}
+
+.tabs.type {
+    margin-top: 60px;
+}
+
+.carousel-item {
+    width: 100% !important;
+    height: initial !important;
+}
+
+.collection {
+    margin: 0;
+}
+
+.collection li {
+    display: block;
+    color: #212121;
+}
+
+.chip {
+    display: block;
+}
