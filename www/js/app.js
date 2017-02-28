@@ -12,6 +12,10 @@ var app = {
      * @returns {app}
      */
     setElements: function () {
+        this.tableNumber = {
+            btn: $('#scan-qrcode'),
+            input: $('#table-number')
+        };
         this.items = $('.collection-item');
         this.clear = $('#clear-selected');
         this.openModal = $('#open-order-summary');
@@ -29,6 +33,7 @@ var app = {
         this.items.bind('click', this.selectItem);
         this.clear.bind('click', this.settingClear);
         this.openModal.bind('click', this.addSelectedItems);
+        this.tableNumber.btn.bind('click', this.selectTableNumber);
 
         //Config to modal
         this.modal.modal({
@@ -108,6 +113,20 @@ var app = {
         });
 
         return this;
+    },
+
+    /**
+     * Add table number by QRCode
+     * @returns {app}
+     */
+    selectTableNumber: function () {
+        cordova.plugins.barcodeScanner.scan(function (result) {
+            app.tableNumber.input.val(result.text);
+        }, function (error) {
+            app.showToast(error);
+        });
+
+        return app;
     },
 
     /**
