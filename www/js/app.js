@@ -3,7 +3,7 @@ var app = {
      * Main function
      */
     initialize: function () {
-        this.setElements();
+        this.build();
         this.bindEvents();
     },
 
@@ -11,7 +11,7 @@ var app = {
      * Set elements to manipulate
      * @returns {app}
      */
-    setElements: function () {
+    build: function () {
         this.tableNumber = {
             btn: $('#scan-qrcode'),
             input: $('#table-number')
