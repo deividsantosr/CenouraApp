@@ -191,6 +191,8 @@ var app = {
                 app.closeModal();
             },
             error: function (data) {
+                app.vibratorPattern();
+
                 app.showToast('Erro ao efetuar o pedido (' + data.responseText + ')');
             },
             complete: function () {
@@ -205,6 +207,16 @@ var app = {
      */
     showToast: function (text) {
         Materialize.toast(text, 800);
+    },
+
+    /**
+     * Vibrate pattern to device on app
+     * @returns {app}
+     */
+    vibratorPattern: function () {
+        navigator.vibrate([50, 100, 50]);
+
+        return this;
     },
 
     /**
