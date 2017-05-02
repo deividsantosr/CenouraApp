@@ -3,6 +3,8 @@ var app = {
      * Main function
      */
     initialize: function () {
+        this.numOrder = 100000;
+
         this.build();
         this.bindEvents();
     },
@@ -19,6 +21,8 @@ var app = {
         this.items = $('.collection-item');
         this.clear = $('#clear-selected');
         this.openModal = $('#open-order-summary');
+        this.btnOrder = $('#save-order');
+        this.btnClose = $('#close-modal');
         this.modal = $('.modal');
         this.tabs = $('.tabs.type');
 
@@ -33,6 +37,7 @@ var app = {
         this.items.bind('click', this.selectItem);
         this.clear.bind('click', this.settingClear);
         this.openModal.bind('click', this.addSelectedItems);
+        this.btnOrder.bind('click', this.closeOrder);
         this.tableNumber.btn.bind('click', this.selectTableNumber);
 
         //Config to modal
@@ -79,12 +84,16 @@ var app = {
      * Callback event to clear selected items
      * @returns {app}
      */
-    settingClear: function () {
+    settingClear: function (showToast) {
+        showToast = typeof showToast !== 'undefined' ? showToast : true;
+
         $('.badge').remove();
 
         app.getSelectedArea().find('.chip').remove();
 
-        app.showToast('Limpado com sucesso');
+        if (showToast) {
+            app.showToast('Limpado com sucesso');
+        }
 
         return this;
     },
@@ -95,6 +104,16 @@ var app = {
      */
     clearModal: function () {
         app.getSelectedArea().find('.chip').remove();
+
+        return this;
+    },
+
+    /**
+     * Trigger to close modal
+     * @returns {app}
+     */
+    closeModal: function () {
+        this.btnClose.trigger('click');
 
         return this;
     },
@@ -126,7 +145,58 @@ var app = {
             app.showToast(error);
         });
 
-        return app;
+        return this;
+    },
+
+    /**
+     * Close order to click on btnOrder
+     * @returns {app}
+     */
+    closeOrder: function () {
+        var table = app.getTableNumber();
+        var summary = app.getSummary();
+
+        app.saveOrder(table, summary);
+
+        return this;
+    },
+
+    /**
+     * Send order via API
+     * @param table
+     * @param info
+     */
+    saveOrder: function (table, info) {
+        var data = {
+            pedido: this.numOrder
+        };
+
+        if (!Number.isNaN(table)) {
+            data.mesa = table;
+        }
+
+        if (info.length) {
+            data.info = info;
+        }
+
+        $.ajax({
+            method: 'GET',
+            url: 'http://cozinhapp.sergiolopes.org/novo-pedido',
+            data: data,
+            success: function () {
+                app.showToast('Pedido efetuado com sucesso!');
+
+                app.settingClear(false);
+                app.clearModal();
+                app.closeModal();
+            },
+            error: function (data) {
+                app.showToast('Erro ao efetuar o pedido (' + data.responseText + ')');
+            },
+            complete: function () {
+                app.numOrder++;
+            }
+        });
     },
 
     /**
@@ -143,6 +213,30 @@ var app = {
      */
     getSelectedArea: function () {
         return $('#selected-items');
+    },
+
+    /**
+     * Retrieve table number
+     * @returns {Number}
+     */
+    getTableNumber: function () {
+        return parseInt(this.tableNumber.input.val());
+    },
+
+    /**
+     * Retrieve summary text
+     * @returns {string}
+     */
+    getSummary: function () {
+        var summary = '';
+
+        this.getSelectedArea().find('.chip').each(function () {
+            summary += $(this).text() + '; ';
+        });
+
+        summary = summary.slice(0, -2);
+
+        return summary;
     },
 
     /**
